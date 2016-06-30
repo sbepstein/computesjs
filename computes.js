@@ -32,6 +32,7 @@ function proceed () {
     socket.connect();
     socket.on('connect', function () {
       console.log(client.name + ': Connected');
+      socket.emit('storeClientInfo', { customId: client.name, domainKey: ["computes"] });
       socket.on('message', function (msg) {
         console.log(msg);
       });
@@ -43,7 +44,7 @@ function proceed () {
         url: 'http://api.computes.io/jobs/requestJob',
         form: {
           client: client,
-          name_patterns: ['computes']
+          domain: ["computes"]
         },
         auth: { 'kazi-token':'YOUR-SECRET-TOKEN' }
       };
@@ -113,6 +114,15 @@ function proceed () {
           if(operation){
             var expression = /https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,}/;
             var regex = new RegExp(expression);
+
+            // check if operation is IPFS. If so, fetch operation
+            var expression = /ipfs:\/\//;
+            var ipfsRegex = new RegExp(expression);
+
+            // check if operation is NPM. If so, fetch operation
+            var expression = /npm:\/\//;
+            var npmRegex = new RegExp(expression);
+
             if (operation.match(regex) )
              {
                $.ajax({
@@ -137,6 +147,42 @@ function proceed () {
 
                  }
                });
+
+             } else if (operation.match(npmRegex)) {
+                 console.log("operation is NPM module. fetching javascript");
+                 var moduleArray = operation.split("//");
+                 var moduleName = moduleArray[1];
+                 var moduleParts = moduleName.split('@');
+                 var moduleUrl = "https://computes-browserify-cdn.herokuapp.com/debug-bundle/" + moduleName;
+                 // var moduleUrl = "https://wzrd.in/debug-bundle/" + moduleName;
+                 $.ajax({
+                   cache: false,
+                   type:'GET',
+                   url: moduleUrl,
+                   success: function(body) {
+
+                       body = body + ' ("' + moduleParts[0] + '")';
+                       var test = eval(body);
+                       if (data){
+                         var result = test(data);
+                       } else {
+                         var result = test();
+                       }
+
+                       result = {result:result};
+
+                       console.log('operation: ' + JSON.stringify(operation));
+                       console.log('data: ' + JSON.stringify(data));
+                       console.log('result: ' + JSON.stringify(result));
+
+                       finishJob(job,result,function(){
+
+                       });
+
+
+                   }
+                 });
+
              } else {
 
                var test = eval(operation);
