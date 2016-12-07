@@ -17,7 +17,8 @@ document.querySelector("head").appendChild(jq);
 
 // Display disclaimer
 var allowComputes = false;
-document.body.innerHTML = '<table width="100%"><tr><td bgcolor="#00000" align="center"><font color="#ffffff"><input type="checkbox" id="isComputesSelected"/> Allow this site to donate your browser computes to cancer research.</font></td></tr></table>' + document.body.innerHTML;
+var charity = document.getElementById("computes").getAttribute("data-charity-text");
+document.body.innerHTML = '<table width="100%"><tr><td bgcolor="#00000" align="center"><font color="#ffffff"><input type="checkbox" id="isComputesSelected"/> Allow this site to donate your browser computes to ' + charity + '.</font></td></tr></table>' + document.body.innerHTML;
 
 function uuid() {
     function _p8(s) {
@@ -250,11 +251,11 @@ function proceed () {
 
     $('#isComputesSelected').change(function() {
         if($(this).is(":checked")) {
-          console.log("checked");
+          console.log("user started computes");
           allowComputes = true;
           requestJob();
         } else {
-          console.log("not checked");
+          console.log("user stopped computes");
           allowComputes = false;
         }
     });
