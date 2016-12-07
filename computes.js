@@ -16,7 +16,9 @@ jq.src = "//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js";
 document.querySelector("head").appendChild(jq);
 
 // Display disclaimer
-document.body.innerHTML = '<table width="100%"><tr><td bgcolor="#00000" align="center"><font color="#ffffff">This site donates your browser computes to cancer research.</font></td></tr></table>' + document.body.innerHTML;
+var allowComputes = false;
+document.body.innerHTML = '<table width="100%"><tr><td bgcolor="#00000" align="center"><font color="#ffffff"><input type="checkbox" id="isComputesSelected"/> Allow this site to donate your browser computes to cancer research.</font></td></tr></table>' + document.body.innerHTML;
+
 function uuid() {
     function _p8(s) {
         var p = (Math.random().toString(16)+"000000000").substr(2,8);
@@ -76,20 +78,26 @@ function proceed () {
             else{
               console.log(client.name +': No jobs...waiting');
               timer = setTimeout(function(){
-                requestJob();
+                if(allowComputes){
+                  requestJob();
+                }
               },1000);
             }
           } else {
             console.log('requestJob timed out');
             timer = setTimeout(function(){
-              requestJob();
+              if(allowComputes){
+                requestJob();
+              }
             },1000);
           }
         })
         .fail(function() {
           console.log('requestJob error');
           timer = setTimeout(function(){
-            requestJob();
+            if(allowComputes){
+              requestJob();
+            }
           },1000);
         });
     }
@@ -223,15 +231,32 @@ function proceed () {
         .done(function( body ) {
           callback();
           timer = setTimeout(function(){
-            requestJob();
+            if(allowComputes){
+              requestJob();
+            }
           },1000);
         })
         .fail(function() {
           console.log('finishJob error');
           timer = setTimeout(function(){
-            requestJob();
+            if(allowComputes){
+              requestJob();
+            }
           },1000);
         });
     }
-    requestJob();
+    // Automatically start computes - disabled to defer to checkbox
+    // requestJob();
+
+    $('#isComputesSelected').change(function() {
+        if($(this).is(":checked")) {
+          console.log("checked");
+          allowComputes = true;
+          requestJob();
+        } else {
+          console.log("not checked");
+          allowComputes = false;
+        }
+    });
+
 }
