@@ -28,10 +28,44 @@ function uuid() {
     return _p8() + _p8(true) + _p8(true) + _p8();
 }
 
+// createCookie('myCookie', 'The value of my cookie...', 7)
+function createCookie(name,value,days) {
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime()+(days*24*60*60*1000));
+        var expires = "; expires="+date.toGMTString();
+    }
+    else var expires = "";
+    document.cookie = name+"="+value+expires+"; path=/";
+}
+
+// var myCookie = readCookie('myCookie');
+function readCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0;i < ca.length;i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+    }
+    return null;
+}
+
+// eraseCookie('myCookie')
+function eraseCookie(name) {
+    createCookie(name,"",-1);
+}
+
+var allowComputes = readCookie('computes');
+
 function proceed () {
     var timer;
     var client = {};
     client.name=uuid();
+
+    if(allowComputes){
+      $('#isComputesSelected').prop( "checked", true );
+    }
 
     var socket = io('http://api.computes.io', {reconnect: true});
     socket.connect();
@@ -248,15 +282,20 @@ function proceed () {
     }
     // Automatically start computes - disabled to defer to checkbox
     // requestJob();
+    if(allowComputes){
+      requestJob();
+    }
 
     $('#isComputesSelected').change(function() {
         if($(this).is(":checked")) {
           console.log("user started computes");
           allowComputes = true;
+          createCookie('computes', allowComputes, 7);
           requestJob();
         } else {
           console.log("user stopped computes");
           allowComputes = false;
+          eraseCookie('computes');
         }
     });
 
