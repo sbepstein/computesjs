@@ -20,6 +20,11 @@ var allowComputes = false;
 var charity = document.getElementById("computes").getAttribute("data-charity-text");
 document.body.innerHTML = '<table width="100%"><tr><td bgcolor="#00000" align="center"><font color="#ffffff"><input type="checkbox" id="isComputesSelected"/> Allow this site to donate your browser computes to ' + charity + '.</font></td></tr></table>' + document.body.innerHTML;
 
+var domainKey = document.getElementById("computes").getAttribute("data-domain-key");
+if (domainKey == null || domainKey == ""){
+  domainKey = "computes";
+}
+
 function uuid() {
     function _p8(s) {
         var p = (Math.random().toString(16)+"000000000").substr(2,8);
@@ -71,7 +76,7 @@ function proceed () {
     socket.connect();
     socket.on('connect', function () {
       console.log(client.name + ': Connected');
-      socket.emit('storeClientInfo', { customId: client.name, domainKey: ["computes"] });
+      socket.emit('storeClientInfo', { customId: client.name, domainKey: [domainKey] });
       socket.on('message', function (msg) {
         console.log(msg);
       });
@@ -83,7 +88,7 @@ function proceed () {
         url: 'http://api.computes.io/jobs/requestJob',
         form: {
           client: client,
-          domain: ["computes"]
+          domain: [domainKey]
         },
         auth: { 'kazi-token':'YOUR-SECRET-TOKEN' }
       };
