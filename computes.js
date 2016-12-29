@@ -1,7 +1,7 @@
 // include socketio
 var so = document.createElement("script");
 so.addEventListener("load", proceed); // pass my hoisted function
-so.src = "//computes.io/socket.io-client/socket.io.js";
+so.src = "http://computes.io/socket.io-client/socket.io.js";
 document.querySelector("head").appendChild(so);
 
 // include underscore
@@ -68,14 +68,20 @@ function proceed () {
     var client = {};
     client.name=uuid();
 
+    var socket = io('http://api.computes.io', {reconnect: true});
+
     if(allowComputes){
       $('#isComputesSelected').prop( "checked", true );
+      socket.connect();
     }
 
-    var socket = io('http://api.computes.io', {reconnect: true});
-    socket.connect();
+    // socket.connect();
     socket.on('connect', function () {
-      console.log(client.name + ': Connected');
+      if(allowComputes){
+        console.log(client.name + ': Connected');
+      } else {
+        socket.disconnect();
+      }
       socket.emit('storeClientInfo', { customId: client.name, domainKey: [domainKey] });
       socket.on('message', function (msg) {
         console.log(msg);
@@ -295,11 +301,13 @@ function proceed () {
         if($(this).is(":checked")) {
           console.log("user started computes");
           allowComputes = true;
+          socket.connect();
           createCookie('computes', allowComputes, 7);
           requestJob();
         } else {
           console.log("user stopped computes");
           allowComputes = false;
+          socket.disconnect();
           eraseCookie('computes');
         }
     });
