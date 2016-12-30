@@ -1,7 +1,7 @@
 // include socketio
 var so = document.createElement("script");
 so.addEventListener("load", proceed); // pass my hoisted function
-so.src = "http://computes.io/socket.io-client/socket.io.js";
+so.src = "http://app.computes.io/socket.io-client/socket.io.js";
 document.querySelector("head").appendChild(so);
 
 // include underscore

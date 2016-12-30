@@ -18,4 +18,4 @@ There are two parameters in the script to configure:
 
 data-charity-text = This text gets displayed at the end of the computes message on your website.
 
-data-domain-key = This is the domain key assigned to you from [computes.io](http://computes.io).
+data-domain-key = This is the domain key assigned to you from [computes.io](http://app.computes.io).
