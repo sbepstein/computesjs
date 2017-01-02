@@ -1,7 +1,7 @@
 // include socketio
 var so = document.createElement("script");
 so.addEventListener("load", proceed); // pass my hoisted function
-so.src = "http://app.computes.io/socket.io-client/socket.io.js";
+so.src = "https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.2/socket.io.js";
 document.querySelector("head").appendChild(so);
 
 // include underscore
