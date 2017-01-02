@@ -68,7 +68,7 @@ function proceed () {
     var client = {};
     client.name=uuid();
 
-    var socket = io('http://api.computes.io', {reconnect: true});
+    var socket = io('https://api.computes.io', {reconnect: true});
 
     if(allowComputes){
       $('#isComputesSelected').prop( "checked", true );
@@ -91,7 +91,7 @@ function proceed () {
     function requestJob(){
 
       var post={
-        url: 'http://api.computes.io/jobs/requestJob',
+        url: 'https://api.computes.io/jobs/requestJob',
         form: {
           client: client,
           domain: [domainKey]
@@ -269,7 +269,7 @@ function proceed () {
 
       $.ajax({
         method: 'POST',
-        url: 'http://api.computes.io/jobs/finishJobs',
+        url: 'https://api.computes.io/jobs/finishJobs',
         data: {client:client,jobs:job,result:result},
         cache: false,
         headers: { 'kazi-token':'YOUR-SECRET-TOKEN' }
